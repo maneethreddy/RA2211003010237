@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Sequence Calculator</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #06b6d4;
+      --light: #f3f4f6;
+      --dark: #1f2937;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: #f9fafb;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 1.1rem;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    
+    .card-header {
+      background-color: var(--light);
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-width: 140px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #0da271;
+    }
+    
+    .btn-warning {
+      background-color: var(--warning);
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #d97706;
+    }
+    
+    .btn-info {
+      background-color: var(--info);
+      color: white;
+    }
+    
+    .btn-info:hover {
+      background-color: #0891b2;
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    
+    .results-container {
+      display: flex;
+      gap: 1.5rem;
+      flex-direction: column;
+    }
+    
+    @media (min-width: 768px) {
+      .results-container {
+        flex-direction: row;
+      }
+    }
+    
+    .results-panel {
+      flex: 1;
+    }
+    
+    .stats-panel {
+      flex: 1;
+    }
+    
+    .code-block {
+      background-color: #f3f4f6;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.9rem;
+      overflow: auto;
+      max-height: 300px;
+      white-space: pre-wrap;
+      color: #374151;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    .stat-card {
+      background-color: var(--light);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 1rem;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 0.25rem solid rgba(37, 99, 235, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Number Sequence Calculator</h1>
+      <p class="subtitle">Test different number sequences and analyze statistics</p>
+    </header>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Select Sequence Type</h2>
+      </div>
+      <div class="card-body">
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="fetchNumbers('p')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Prime Numbers
+          </button>
+          <button class="btn btn-success" onclick="fetchNumbers('f')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M2 12a10 10 0 0 1 20 0M2 12a10 10 0 0 0 20 0"></path></svg>
+            Fibonacci
+          </button>
+          <button class="btn btn-info" onclick="fetchNumbers('e')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Even Numbers
+          </button>
+          <button class="btn btn-warning" onclick="fetchNumbers('r')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Random Numbers
+          </button>
+          <button class="btn btn-danger" onclick="fetchNumbers('x')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            Invalid Type
+          </button>
+        </div>
+        
+        <div id="loading" class="loading">
+          <div class="loading-spinner"></div>
+          <p>Fetching data...</p>
+        </div>
+        
+        <div id="error" class="error-message"></div>
+        
+        <div class="results-container">
+          <div class="results-panel">
+            <h3>Response Data</h3>
+            <pre id="response" class="code-block">Click a button to fetch numbers</pre>
+          </div>
+          
+          <div class="stats-panel">
+            <h3>Statistics</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div id="average" class="stat-value">-</div>
+                <div class="stat-label">Average</div>
+              </div>
+              <div class="stat-card">
+                <div id="count" class="stat-value">-</div>
+                <div class="stat-label">Count</div>
+              </div>
+              <div class="stat-card">
+                <div id="min" class="stat-value">-</div>
+                <div class="stat-label">Minimum</div>
+              </div>
+              <div class="stat-card">
+                <div id="max" class="stat-value">-</div>
+                <div class="stat-label">Maximum</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function fetchNumbers(type) {
+      const loadingEl = document.getElementById('loading');
+      const responseEl = document.getElementById('response');
+      const errorEl = document.getElementById('error');
+      
+      // Reset stats
+      document.getElementById('average').textContent = '-';
+      document.getElementById('count').textContent = '-';
+      document.getElementById('min').textContent = '-';
+      document.getElementById('max').textContent = '-';
+      
+      // Show loading, hide error
+      loadingEl.style.display = 'block';
+      errorEl.style.display = 'none';
+      responseEl.textContent = 'Fetching...';
+      
+      fetch(`/numbers/${type}`)
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => {
+              throw new Error(err.error || 'Error fetching data');
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          loadingEl.style.display = 'none';
+          responseEl.textContent = JSON.stringify(data, null, 2);
+          
+          // Calculate and display statistics
+          if (data.numbers && Array.isArray(data.numbers)) {
+            const numbers = data.numbers;
+            const sum = numbers.reduce((acc, num) => acc + num, 0);
+            const avg = numbers.length ? (sum / numbers.length).toFixed(2) : 0;
+            const min = numbers.length ? Math.min(...numbers) : '-';
+            const max = numbers.length ? Math.max(...numbers) : '-';
+            
+            document.getElementById('average').textContent = avg;
+            document.getElementById('count').textContent = numbers.length;
+            document.getElementById('min').textContent = min;
+            document.getElementById('max').textContent = max;
+          }
+        })
+        .catch(error => {
+          loadingEl.style.display = 'none';
+          responseEl.textContent = 'No data available';
+          errorEl.textContent = `Error: ${error.message}`;
+          errorEl.style.display = 'block';
+        });
+    }
+  </script>
+</body>
+</html>
